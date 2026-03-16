@@ -14,6 +14,16 @@ async function bootstrap() {
 
     app.useGlobalInterceptors(new TransformInterceptor());
 
+    app.enableCors(
+        {
+            origin: [
+                'http://localhost:3000',
+                'http://localhost:5173',
+                'https://tu-frontend.onrender.com'
+            ],
+            credentials: true,
+        }
+    )
     // Swagger config
     const config = new DocumentBuilder()
         .setTitle('E-Commerce API')
