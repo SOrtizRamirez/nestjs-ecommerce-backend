@@ -429,20 +429,46 @@ npm install
 Crear archivo `.env`:
 
 ```
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=yourpassword
-DB_NAME=ecommerce
+### Configurar variables de entorno
 
+Crear archivo `.env`:
+
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 JWT_SECRET=supersecretkey
+
 ```
+
+### Nota sobre PostgreSQL en producción
+
+Cuando se utiliza PostgreSQL en servicios cloud como Render, la conexión requiere SSL.
+
+El proyecto está configurado para conectarse automáticamente usando:
+
+ssl: {
+  rejectUnauthorized: false
+}
 
 ### Ejecutar servidor
 
 ```
 npm run start:dev
 ```
+
+---
+
+# Deploy
+
+El backend puede desplegarse fácilmente en plataformas cloud como Render.
+
+Pasos generales:
+
+1. Crear una base de datos PostgreSQL en Render
+2. Copiar la External Database URL
+3. Configurar la variable de entorno:
+
+DATABASE_URL
+
+4. Desplegar el servicio backend
 
 ---
 
