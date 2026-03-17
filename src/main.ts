@@ -10,10 +10,6 @@ async function bootstrap() {
 
     const app = await NestFactory.create(AppModule);
 
-    app.useGlobalFilters(new HttpExceptionFilter());
-
-    app.useGlobalInterceptors(new TransformInterceptor());
-
     app.enableCors(
         {
             origin: [
@@ -24,6 +20,11 @@ async function bootstrap() {
             credentials: true,
         }
     )
+
+    app.useGlobalFilters(new HttpExceptionFilter());
+
+    app.useGlobalInterceptors(new TransformInterceptor());
+
     // Swagger config
     const config = new DocumentBuilder()
         .setTitle('E-Commerce API')
