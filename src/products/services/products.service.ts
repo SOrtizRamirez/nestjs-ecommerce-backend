@@ -9,6 +9,7 @@ import { ProductImage } from '../entities/product-image.entity';
 import { CreateProductDto } from '../dtos/create-product.dto';
 import { UpdateProductDto } from '../dtos/update-product.dto';
 import { Category } from '../../categories/entities/category.entity';
+import { ILike } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
@@ -41,26 +42,35 @@ export class ProductsService {
         return await this.productRepository.save(product);
     }
 
-    async findAll(page = 1, limit = 10, category?: string) {
-        const query = this.productRepository.createQueryBuilder('product')
-            .leftJoinAndSelect('product.images', 'images')
-            .leftJoinAndSelect('product.category', 'category');
+
+
+    async findAll(
+        page: number,
+        limit: number,
+        category?: string,
+        search?: string
+    ) {
+
+        const where: any = {}
 
         if (category) {
-            query.andWhere('category.id = :category', { category });
+            where.categoryId = category
         }
 
-        query.skip((page - 1) * limit)
-            .take(limit);
+        if (search) {
+            where.name = ILike(`%${search}%`)
+        }
 
-        const [products, total] = await query.getManyAndCount();
+        const [data, total] = await this.productRepository.findAndCount({
+            where,
+            take: limit,
+            skip: (page - 1) * limit,
+        })
 
         return {
-            total,
-            page,
-            limit,
-            data: products
-        };
+            data,
+            total
+        }
     }
 
     async findOne(id: string) {

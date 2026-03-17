@@ -35,12 +35,14 @@ export class ProductsController {
     findAll(
         @Query('page') page = 1,
         @Query('limit') limit = 10,
-        @Query('category') category?: string
+        @Query('category') category?: string,
+        @Query('search') search?: string
     ) {
         return this.productsService.findAll(
             Number(page),
             Number(limit),
-            category
+            category,
+            search
         );
     }
 
