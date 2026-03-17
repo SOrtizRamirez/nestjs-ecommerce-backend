@@ -9,7 +9,7 @@ import { ProductImage } from '../entities/product-image.entity';
 import { CreateProductDto } from '../dtos/create-product.dto';
 import { UpdateProductDto } from '../dtos/update-product.dto';
 import { Category } from '../../categories/entities/category.entity';
-import { ILike } from 'typeorm';
+import { ILike, Between } from "typeorm"
 
 @Injectable()
 export class ProductsService {
@@ -42,13 +42,14 @@ export class ProductsService {
         return await this.productRepository.save(product);
     }
 
-
-
     async findAll(
         page: number,
         limit: number,
         category?: string,
-        search?: string
+        search?: string,
+        minPrice?: number,
+        maxPrice?: number,
+        sort?: string
     ) {
 
         const where: any = {}
@@ -61,10 +62,25 @@ export class ProductsService {
             where.name = ILike(`%${search}%`)
         }
 
+        if (minPrice !== undefined && maxPrice !== undefined) {
+            where.price = Between(minPrice, maxPrice)
+        }
+
+        let order: any = {}
+
+        if (sort === "price_asc") {
+            order.price = "ASC"
+        }
+
+        if (sort === "price_desc") {
+            order.price = "DESC"
+        }
+
         const [data, total] = await this.productRepository.findAndCount({
             where,
             take: limit,
             skip: (page - 1) * limit,
+            order
         })
 
         return {

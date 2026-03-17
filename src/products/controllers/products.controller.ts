@@ -36,13 +36,19 @@ export class ProductsController {
         @Query('page') page = 1,
         @Query('limit') limit = 10,
         @Query('category') category?: string,
-        @Query('search') search?: string
+        @Query('search') search?: string,
+        @Query('minPrice') minPrice?: string,
+        @Query('maxPrice') maxPrice?: string,
+        @Query('sort') sort?: string
     ) {
         return this.productsService.findAll(
             Number(page),
             Number(limit),
             category,
-            search
+            search,
+            minPrice ? Number(minPrice) : undefined,
+            maxPrice ? Number(maxPrice) : undefined,
+            sort
         );
     }
 
