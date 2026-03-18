@@ -106,17 +106,20 @@ export class OrdersService {
         return order;
     }
 
-    async findAll() {
-        return this.orderRepository.find({
-            relations: [
-                "user",
-                "items",
-                "items.product",
-            ],
-            order: {
-                createdAt: "DESC",
-            },
+    async findAll(page = 1, limit = 10) {
+        const [data, total] = await this.orderRepository.findAndCount({
+            relations: ["user", "items", "items.product"],
+            order: { createdAt: "DESC" },
+            skip: (page - 1) * limit,
+            take: limit,
         });
+
+        return {
+            data,
+            total,
+            page,
+            lastPage: Math.ceil(total / limit),
+        };
     }
 
 };
