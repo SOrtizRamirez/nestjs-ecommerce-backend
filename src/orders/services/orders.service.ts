@@ -1,4 +1,5 @@
 import {
+    ForbiddenException,
     Injectable,
     NotFoundException
 } from '@nestjs/common';
@@ -88,15 +89,34 @@ export class OrdersService {
         });
     }
 
-    async findOne(id: string) {
+    async findOne(id: string, user: User) {
         const order = await this.orderRepository.findOne({
             where: { id },
-            relations: ['items', 'items.product', 'address']
+            relations: ['user', 'items'],
         });
 
         if (!order) {
             throw new NotFoundException('Order not found');
         }
+
+        if (order.user.id !== user.id && user.role !== 'admin') {
+            throw new ForbiddenException('Access denied');
+        }
+
         return order;
     }
+
+    async findAll() {
+        return this.orderRepository.find({
+            relations: [
+                "user",
+                "items",
+                "items.product",
+            ],
+            order: {
+                createdAt: "DESC",
+            },
+        });
+    }
+
 };
